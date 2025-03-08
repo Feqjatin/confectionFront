@@ -188,7 +188,7 @@
 
         async function getUserId(username) {
             try {
-                const response = await fetch(`http://localhost:8090/getUserId?username=${username}`);
+                const response = await fetch(`https://confection-back.onrender.com/getUserId?username=${username}`);
                 const data = await response.json();
                 return data.uid;
             } catch (error) {
@@ -210,7 +210,7 @@
             }
             
             try {
-                const response = await fetch(`http://localhost:8090/trackMessage?u=${u}&m=${m}`);
+                const response = await fetch(`https://confection-back.onrender.com/trackMessage?u=${u}&m=${m}`);
                 const data = await response.json();
                 
                 if (data.error) {
@@ -275,7 +275,7 @@
             if (!u) return;
 
             try {
-                const response = await fetch(`http://localhost:8090/nextMessage?u=${u}`);
+                const response = await fetch(`https://confection-back.onrender.com/nextMessage?u=${u}`);
                 const data = await response.json();
 
                 if (data.error) {
@@ -301,7 +301,7 @@
             const uid = await getUserId(username);
             if (!uid) return;
 
-            const response = await fetch(`http://localhost:8090/nextMessage?u=${uid}`);
+            const response = await fetch(`https://confection-back.onrender.com/nextMessage?u=${uid}`);
             const data = await response.json();
 
             if (data.nextMsgId) {

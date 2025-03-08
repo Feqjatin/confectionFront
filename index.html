@@ -190,7 +190,7 @@
             }
 
             try {
-                const response = await fetch(`http://localhost:8090/checkUname?username=${username}`);
+                const response = await fetch(`https://confection-back.onrender.com/checkUname?username=${username}`);
                 const data = await response.json();
 
                 message.textContent = data.message === "T" 
@@ -225,7 +225,7 @@
 
             if (isExistingUser) {
                 try {
-                    const response = await fetch(`http://localhost:8090/checkUname?username=${username}`);
+                    const response = await fetch(`https://confection-back.onrender.com/checkUname?username=${username}`);
                     const data = await response.json();
 
                     if (data.message === "F") {
@@ -243,7 +243,7 @@
                 }
             } else {
                 try {
-                    await fetch(`http://localhost:8090/giveName?username=${username}`);
+                    await fetch(`https://confection-back.onrender.com/giveName?username=${username}`);
                     localStorage.setItem("username", username);
                     window.location.href = 'dashboard.html';
                 } catch (error) {
