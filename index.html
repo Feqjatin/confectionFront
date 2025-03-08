@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secret Confessions - Anonymous Access</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;500;700&display=swap" rel="stylesheet">
+    
+    <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
+    <!-- Custom Google font-->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@100;200;300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet" />
+    <!-- Bootstrap icons-->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css" rel="stylesheet" />
+    <!-- Core theme CSS (includes Bootstrap)-->
+    <link href="css/styles.css" rel="stylesheet" />
+    <style>
+        body {
+            min-height: 100vh;
+            font-family: 'Courier New', monospace;
+            color: #fff;
+            display: flex;
+            align-items: center;
+        }
+
+        .confession-box {
+            background: rgba(25, 25, 25, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 3rem;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            animation: fadeIn 1s ease-in;
+        }
+
+        .ghost-icon {
+            width: 100px;
+            filter: drop-shadow(0 0 10px #fff);
+            animation: float 3s ease-in-out infinite;
+        }
+
+        input {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid #4a4a4a;
+            color: #fff !important;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        input:focus {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: #00ffff;
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
+        }
+
+        .message {
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+            font-size: 0.9em;
+        }
+
+        .message.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        #submitBtn {
+            background: linear-gradient(45deg, #00ffff, #0080ff);
+            border: none;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        #submitBtn::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, 
+                transparent 25%, 
+                rgba(255, 255, 255, 0.1) 50%, 
+                transparent 75%);
+            animation: shine 3s infinite;
+        }
+
+        .toggle-btn {
+            background: transparent;
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            color: #00ffff;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            margin-top: 1rem;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        @keyframes shine {
+            100% { transform: translateX(100%); }
+        }
+    </style>
+</head>
+<body class="d-flex align-items-center  bg-gradient-primary-to-secondary">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-12 text-center">
+                <img src="assets/h.png" 
+                     alt="Secret Share Logo" 
+                     class="img-fluid logo-image"
+                     style="max-width: 200px; height: auto; margin-top: -50px;;">
+            </div>
+            <div class="col-md-6">
+                <div class="confession-box text-center">
+                    <svg class="ghost-icon mb-4" viewBox="0 0 24 24">
+                        <path fill="currentColor" d="M12 2a9 9 0 0 0-9 9v11l3-3 3 3 3-3 3 3 3-3 3 3V11a9 9 0 0 0-9-9m0 2a7 7 0 0 1 7 7v9.17l-1.59-1.59L12 14.16l-5.41 5.42L5 20.17V11a7 7 0 0 1 7-7m0 6a1 1 0 0 0-1 1a1 1 0 0 0 1 1a1 1 0 0 0 1-1a1 1 0 0 0-1-1m-4 1a1 1 0 0 0-1 1a1 1 0 0 0 1 1a1 1 0 0 0 1-1a1 1 0 0 0-1-1m8 0a1 1 0 0 0-1 1a1 1 0 0 0 1 1a1 1 0 0 0 1-1a1 1 0 0 0-1-1z"/>
+                    </svg>
+                    <h2 class="mb-4">Enter Secret Identity</h2>
+                    <input type="text" id="newUsername" class="form-control mb-3 text-black" 
+                           placeholder="New Anonymous Name" oninput="checkNewUsername()">
+                    <input type="text" id="existingUsername" class="form-control mb-3" 
+                           placeholder="Existing Identity" style="display: none;">
+                    <div class="message mb-3" id="message"></div>
+                    <button id="submitBtn" class="btn btn-primary w-100" 
+                            onclick="handleSubmit()" disabled>Enter Confession Room</button>
+                    <button class="toggle-btn w-100" onclick="toggleUserType()" type="button">
+                        Already Have an Identity?
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let isExistingUser = false;
+
+        function toggleUserType() {
+            const btn = document.querySelector('.toggle-btn');
+            const newInput = document.getElementById('newUsername');
+            const existingInput = document.getElementById('existingUsername');
+            const submitBtn = document.getElementById('submitBtn');
+            const message = document.getElementById('message');
+
+            isExistingUser = !isExistingUser;
+            
+            if (isExistingUser) {
+                btn.textContent = 'Create New Identity';
+                newInput.style.display = 'none';
+                existingInput.style.display = 'block';
+                submitBtn.textContent = 'Access Confessions';
+                submitBtn.disabled = false;
+            } else {
+                btn.textContent = 'Already Have an Identity?';
+                newInput.style.display = 'block';
+                existingInput.style.display = 'none';
+                submitBtn.textContent = 'Enter Confession Room';
+                submitBtn.disabled = true;
+            }
+            message.textContent = "";
+            message.classList.remove('show');
+        }
+
+        async function checkNewUsername() {
+            const username = document.getElementById("newUsername").value;
+            const message = document.getElementById("message");
+            const submitBtn = document.getElementById("submitBtn");
+
+            message.classList.remove('show');
+
+            if (username.length < 3) {
+                message.textContent = "⛔ Name must be 3+ characters";
+                message.style.color = "#ff4444";
+                submitBtn.disabled = true;
+                setTimeout(() => message.classList.add('show'), 10);
+                return;
+            }
+
+            try {
+                const response = await fetch(`http://localhost:8090/checkUname?username=${username}`);
+                const data = await response.json();
+
+                message.textContent = data.message === "T" 
+                    ? "✅ Identity Available - Proceed Anonymously" 
+                    : "⚠️ Identity Taken - Choose Another";
+                message.style.color = data.message === "T" ? "#00ff88" : "#ff4444";
+                submitBtn.disabled = data.message !== "T";
+                setTimeout(() => message.classList.add('show'), 10);
+
+            } catch (error) {
+                message.textContent = "🔒 Connection Failed";
+                message.style.color = "#ff4444";
+                submitBtn.disabled = true;
+                setTimeout(() => message.classList.add('show'), 10);
+            }
+        }
+
+        async function handleSubmit() {
+            const username = isExistingUser 
+                ? document.getElementById("existingUsername").value 
+                : document.getElementById("newUsername").value;
+
+            const message = document.getElementById("message");
+            message.classList.remove('show');
+
+            if (username.length < 3) {
+                message.textContent = "⛔ Name must be 3+ characters";
+                message.style.color = "#ff4444";
+                setTimeout(() => message.classList.add('show'), 10);
+                return;
+            }
+
+            if (isExistingUser) {
+                try {
+                    const response = await fetch(`http://localhost:8090/checkUname?username=${username}`);
+                    const data = await response.json();
+
+                    if (data.message === "F") {
+                        localStorage.setItem("username", username);
+                        window.location.href = 'dashboard.html';
+                    } else {
+                        message.textContent = "⚠️ Invalid Identity - Not Found";
+                        message.style.color = "#ff4444";
+                        setTimeout(() => message.classList.add('show'), 10);
+                    }
+                } catch (error) {
+                    message.textContent = "🔒 Connection Failed";
+                    message.style.color = "#ff4444";
+                    setTimeout(() => message.classList.add('show'), 10);
+                }
+            } else {
+                try {
+                    await fetch(`http://localhost:8090/giveName?username=${username}`);
+                    localStorage.setItem("username", username);
+                    window.location.href = 'dashboard.html';
+                } catch (error) {
+                    message.textContent = "🔒 Connection Failed";
+                    message.style.color = "#ff4444";
+                    setTimeout(() => message.classList.add('show'), 10);
+                }
+            }
+        }
+    </script>
+</body>
+</html>

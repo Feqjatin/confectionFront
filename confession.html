@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secret Share - Confession Room</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+           <!-- Favicon-->
+           <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
+           <!-- Custom Google font-->
+           <link rel="preconnect" href="https://fonts.googleapis.com" />
+           <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+           <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@100;200;300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet" />
+           <!-- Bootstrap icons-->
+           <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css" rel="stylesheet" />
+           <!-- Core theme CSS (includes Bootstrap)-->
+           <link href="css/styles.css" rel="stylesheet" />
+           
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+   <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --danger-gradient: linear-gradient(45deg, #ff6b6b, #ff4757);
+            --warning-gradient: linear-gradient(45deg, #ffd93d, #ff9f43);
+            --dark-bg: linear-gradient(145deg, #0f0f0f, #1a1a1a);
+        }
+
+        body {
+            background: var(--light-bg);
+            min-height: 100vh;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+
+        .confession-box {
+            background:linear-gradient(43deg, #4158D0 0%, #C850C0 46%, #FFCC70 100%);
+            border-radius: 20%;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .confession-box:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .confession-text {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            color: rgba(255, 255, 255, 0.9);
+            padding: 1.5rem;
+            border-radius: 12px;
+            background:linear-gradient(43deg, #4158D0 0%, #C850C0 46%, #FFCC70 100%);
+        }
+
+        .btn-primary {
+            background: var(--primary-gradient);
+            border: none;
+            padding: 0.8rem 2rem;
+            border-radius: 50px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+            transform: scale(1.05);
+        }
+
+        .timer-display {
+            font-size: 0.9rem;
+            font-weight: 500;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            display: inline-block;
+        }
+
+        .modal-content {
+            background: var(--dark-bg);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            backdrop-filter: blur(15px);
+        }
+
+        .modal-header {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .modal-title {
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 600;
+        }
+
+        .btn-danger {
+            background: var(--danger-gradient);
+            border: none;
+            min-width: 40px;
+        }
+
+        .btn-warning {
+            background: var(--warning-gradient);
+            border: none;
+            min-width: 40px;
+        }
+
+        .btn-group .btn {
+            margin-left: 0.5rem;
+            border-radius: 10px !important;
+            transition: all 0.3s ease;
+        }
+
+        .btn-group .btn:hover {
+            transform: scale(1.1);
+        }
+
+        textarea.form-control {
+            background: rgba(0, 0, 0, 0.3) !important;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white !important;
+            border-radius: 12px;
+            resize: none;
+        }
+
+        textarea.form-control:focus {
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.25);
+        }
+
+        .progress-bar {
+            height: 3px;
+            background: var(--primary-gradient);
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            border-radius: 0 0 15px 15px;
+            transition: width 1s linear;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.95); opacity: 0.6; }
+            50% { transform: scale(1); opacity: 1; }
+            100% { transform: scale(0.95); opacity: 0.6; }
+        }
+
+        .loading-pulse {
+            animation: pulse 1.5s infinite;
+        }
+    
+    /* Update confession container positioning */
+    #confessionsContainer {
+        position: relative;
+        z-index: 1;
+        margin-right: 620px; /* Space for the image */
+    }
+
+    /* Update image positioning */
+    .position-fixed {
+        position: fixed;
+        right: 20px;
+        bottom: 20px;
+        width: 600px;
+        height: auto;
+        z-index: 0;
+        opacity: 0.9;
+        pointer-events: none; /* Make image non-interactive */
+    }
+
+    @media (max-width: 1600px) {
+        #confessionsContainer {
+            margin-right: 500px;
+        }
+        .position-fixed {
+            width: 500px;
+        }
+    }
+
+    @media (max-width: 1400px) {
+        #confessionsContainer {
+            margin-right: 400px;
+        }
+        .position-fixed {
+            width: 400px;
+        }
+    }
+
+    @media (max-width: 1200px) {
+        #confessionsContainer {
+            margin-right: 0;
+            width: 100%;
+        }
+        .position-fixed {
+            display: none;
+        }
+    }
+
+    /* Update confession box width */
+    .confession-box {
+        width: 100% !important;
+        max-width: 800px;
+        margin-left: 0 !important;
+    }
+
+
+    @media (max-width: 768px) {
+        .navbar-brand span {
+            font-size: 1.2rem !important;
+        }
+        
+        .nav-link {
+            font-size: 0.9rem !important;
+        }
+        
+        .confession-box {
+            width: 95% !important;
+            padding: 1rem !important;
+        }
+        
+        .confession-text {
+            font-size: 1rem;
+            padding: 1rem;
+        }
+        
+        .btn-group {
+            width: 100% !important;
+            justify-content: center !important;
+            margin-top: 1rem;
+        }
+        
+        .btn {
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+        }
+        
+        .position-fixed {
+            width: 70vw !important;
+            bottom: -10% !important;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .container {
+            padding: 1rem !important;
+        }
+        
+        .modal-content {
+            width: 95vw !important;
+            margin: 0 auto;
+        }
+        
+        textarea.form-control {
+            font-size: 0.9rem;
+            min-height: 120px;
+        }
+        
+        .position-fixed {
+            display: none !important;
+        }
+        
+        .btn-group .btn {
+            margin: 0.25rem;
+            min-width: 45px;
+        }
+        
+        .timer-display {
+            font-size: 0.8rem !important;
+        }
+    }
+
+    @media (min-width: 1200px) {
+        .position-fixed {
+            right: 5% !important;
+            bottom: 5% !important;
+        }
+    }
+
+    </style>
+</head>
+<body class="text-light d-flex flex-column h-100">
+    <main class="flex-shrink-0">
+
+    <nav class="navbar navbar-expand-lg navbar-light bg-white  bg-gradient-primary-to-secondary">
+        <div class="container px-5 p-0">
+            <h1 class="navbar-brand" ><span class="fw-bolder text-white fs-3">🕊️ Secret Share</span></h1>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0 small fw-bolder text-white">
+                    <li class="nav-item"><a class="nav-link text-white fs-5" href="dashboard.html">Home</a></li>
+                    <li class="nav-item"><a class="nav-link text-white fs-5" href="user.html">User</a></li>
+                    <li class="nav-item"><a class="nav-link text-white fs-5" href="contact.html">Contact</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <img src="./assets/confession.png" class="position-fixed" alt="Decorative background">
+
+    <div class="container py-5">
+        <div class="d-flex justify-content-center align-items-center mb-5">
+            <button class="btn btn-primary" onclick="showNewConfessionModal()">
+                <i class="fas fa-plus me-2"></i>New Confession
+            </button>
+        </div>
+
+        <div id="confessionsContainer" class="row g-4"></div>
+
+        <!-- New Confession Modal -->
+        <div class="modal fade" id="confessionModal">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title"><i class="fas fa-feather me-2"></i>Whisper Your Truth</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <textarea id="confessionInput" class="form-control" 
+                                  rows="5" 
+                                  placeholder="Write your anonymous confession here..."
+                                  maxlength="500"></textarea>
+                        <div class="mt-3 text-end text-muted small">
+                            <span id="charCount">0</span>/500 characters
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary" onclick="createConfession()">Release into the Void</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const API_BASE = 'http://localhost:8090'; 
+        const username = localStorage.getItem('username'); 
+
+        async function fetchConfessions() {
+            try {
+                const response = await fetch(`${API_BASE}/gMessages?username=${username}`);
+                const data = await response.json();
+
+                const container = document.getElementById('confessionsContainer');
+                container.innerHTML = '';
+
+                if (data.error) {
+                    container.innerHTML = `<p class="text-warning">${data.error}</p>`;
+                    return;
+                }
+
+                data.messages.forEach(renderConfession);
+            } catch (error) {
+                console.error("Error fetching messages:", error);
+            }
+        }
+
+        async function createConfession() {
+            const text = document.getElementById('confessionInput').value.trim();
+            if (!text) return alert('Please enter a confession!');
+
+            try {
+                const response = await fetch(`${API_BASE}/cMessages?username=${username}&msg=${encodeURIComponent(text)}`, { method: 'GET' });
+                const data = await response.json();
+
+             //   alert(data.message);
+                if (!data.error) {
+                    fetchConfessions();
+                    document.getElementById('confessionInput').value = '';
+                    bootstrap.Modal.getInstance(document.getElementById('confessionModal')).hide();
+                }
+            } catch (error) {
+                console.error("Error creating message:", error);
+            }
+        }
+
+        async function deleteConfession(msgid) {
+            try {
+                const response = await fetch(`${API_BASE}/dMessage?username=${username}&msgid=${msgid}`, { method: 'DELETE' });
+                const data = await response.json();
+
+              //  alert(data.message);
+                if (!data.error) fetchConfessions();
+            } catch (error) {
+                console.error("Error deleting message:", error);
+            }
+        }
+
+        function renderConfession(confession) {
+            const container = document.getElementById('confessionsContainer');
+            const card = document.createElement('div');
+            card.className = 'confession-box p-3 mb-3 border rounded';
+            card.style.width="600px";
+            card.setAttribute('data-msgid', confession.msgid);
+            const remainingTime = getRemainingTime(confession.createdAt);
+            const timerId = `timer-${confession.msgid}`;
+
+            card.innerHTML = `
+                <div class="card shadow-sm mb-3">
+    <div class="card-body">
+        <div class="confession-text mb-3">
+            <i class="fas fa-comment-dots"></i> ${confession.msgdescription}
+        </div>
+        <div class="small text-warning mb-2">
+            <i class="fas fa-clock"></i> Time left: <span id="${timerId}">${formatTime(remainingTime)}</span>
+        </div>
+        <div class="btn-group justify-content-end mt-2 w-100">
+            <button class="btn btn-sm btn-outline-primary" onclick="enableEdit(this)">
+                <i class="fas fa-edit"></i> Edit
+            </button>
+            <button class="btn btn-sm btn-outline-danger" onclick="deleteConfession('${confession.msgid}')">
+                <i class="fas fa-trash-alt"></i> Delete
+            </button>
+        </div>
+    </div>
+</div>
+            `;
+
+            container.prepend(card);
+
+            // Start countdown
+            startTimer(timerId, confession.createdAt, card);
+        }
+
+        function enableEdit(button) {
+            const card = button.closest('.confession-box');
+            const textElement = card.querySelector('.confession-text');
+            const msgid = card.dataset.msgid;
+
+            const textarea = document.createElement('textarea');
+            textarea.className = 'form-control';
+            textarea.value = textElement.textContent;
+            textarea.maxLength = 500;
+
+            textarea.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    saveEdit(textarea, msgid, card);
+                }
+            });
+
+            textarea.addEventListener('blur', () => saveEdit(textarea, msgid, card));
+            textElement.replaceWith(textarea);
+            textarea.focus();
+        }
+
+        function saveEdit(textarea, msgid, card) {
+            const newText = textarea.value.trim();
+            if (!newText) return;
+
+            const textElement = document.createElement('div');
+            textElement.className = 'confession-text';
+            textElement.textContent = newText;
+            textarea.replaceWith(textElement);
+
+            updateConfession(msgid, newText);
+        }
+
+        function getRemainingTime(createdAt) {
+            if (!createdAt) return 0;  // Handle missing timestamps
+
+            const createdTime = new Date(createdAt).getTime();
+            if (isNaN(createdTime)) return 0; // Prevent NaN issues
+
+            const expiresAt = createdTime + 24 * 60 * 60 * 1000; // 24 hours later
+            return Math.max(0, expiresAt - Date.now());
+        }// Update the updateConfession function in your frontend code
+async function updateConfession(msgid, newText) {
+    try {
+        const response = await fetch(`${API_BASE}/uMessages?username=${username}&msgid=${msgid}&msg=${encodeURIComponent(newText)}`, { 
+            method: 'GET' // Match your server's GET method
+        });
+        const data = await response.json();
+        
+        if (!data.error) {
+           // alert('Confession updated successfully!');
+            fetchConfessions();
+        } else {
+           // alert('Error updating confession: ' + data.error);
+        }
+    } catch (error) {
+        console.error("Error updating message:", error);
+       // alert('Failed to update confession');
+    }
+}
+
+function formatTime(ms) {
+            if (ms <= 0) return "Expired";
+
+            const hours = Math.floor(ms / (1000 * 60 * 60));
+            const minutes = Math.floor((ms % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((ms % (1000 * 60)) / 1000);
+            return `${hours}h ${minutes}m ${seconds}s`;
+        }
+
+        function startTimer(timerId, createdAt, card) {
+            function updateTimer() {
+                const remainingTime = getRemainingTime(createdAt);
+                const timerElement = document.getElementById(timerId);
+                if (!timerElement) return;
+
+                if (remainingTime <= 0) {
+                    card.remove(); // Remove message from UI
+                    deleteConfession(card.dataset.msgid); // Delete message from server
+                    return;
+                }
+
+                timerElement.textContent = formatTime(remainingTime);
+                setTimeout(updateTimer, 1000);
+            }
+
+            updateTimer();
+        }
+
+        function showNewConfessionModal() {
+            const modal = new bootstrap.Modal(document.getElementById('confessionModal'));
+            modal.show();
+        }
+        document.getElementById('confessionInput').addEventListener('input', function() {
+                document.getElementById('charCount').textContent = this.value.length;
+            });
+
+        setTimeout(fetchConfessions, 1000);
+    </script>
+</body>
+</html>
